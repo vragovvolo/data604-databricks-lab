@@ -10,6 +10,7 @@
 -- COMMAND ----------
 
 USE CATALOG workspace;
+DROP VIEW IF EXISTS data604.latest_updates;
 DROP TABLE IF EXISTS data604.permits;
 DROP TABLE IF EXISTS data604.permit_updates;
 DROP TABLE IF EXISTS data604.communities;
@@ -21,5 +22,7 @@ SHOW TABLES IN data604
 
 -- COMMAND ----------
 
-SELECT assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'data604') = 0, 'lab tables still exist') AS reset_ok,
+SELECT assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'data604'
+                    AND table_name IN ('permits', 'permit_updates', 'communities', 'latest_updates')) = 0,
+                   'lab tables still exist: run the first cell again') AS reset_ok,
        assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'perf') = 2, 'perf tables missing: rerun prep_day_before') AS perf_ok

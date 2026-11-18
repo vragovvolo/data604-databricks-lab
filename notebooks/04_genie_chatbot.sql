@@ -11,7 +11,8 @@
 
 -- COMMAND ----------
 
--- Catch-up: brings permits to the state at the end of lab 03. Safe to run even if you finished lab 03.
+-- Catch-up: brings permits to the state at the end of lab 03. Safe to run again.
+-- It can't undo the lab 03 UPDATE mistake. If the check below fails, run the RESTORE cell in lab 03 first.
 USE CATALOG workspace;
 CREATE SCHEMA IF NOT EXISTS data604;
 USE SCHEMA data604;
@@ -45,7 +46,7 @@ WHEN NOT MATCHED THEN INSERT *;
 -- COMMAND ----------
 
 SELECT assert_true(count(*) = 45676, 'expected 45,676 permits') AS rows_ok,
-       assert_true(count_if(status = 'Completed') = 27375, 'statuses look wrong: run lab 03 from the top') AS statuses_ok
+       assert_true(count_if(status = 'Completed') = 27375, 'statuses look wrong: run the RESTORE cell in lab 03 (or lab 03 from the top), then this notebook from the top') AS statuses_ok
 FROM permits
 
 -- COMMAND ----------
@@ -111,8 +112,9 @@ FROM communities
 -- MAGIC 4. Ask: **How many permits are open?** Then ask: **How many permits are active?**
 -- MAGIC    Write down both numbers, and open the SQL Genie wrote for each answer.
 -- MAGIC
--- MAGIC Nothing tells Genie yet what "open" or "active" means, so it has to guess. When we tested this, it looked for
--- MAGIC the words "open" and "active" in the status values, found neither, and answered 0. Read the SQL to see what your agent guessed.
+-- MAGIC Nothing tells Genie yet what "open" or "active" means, so it has to guess. When we tested this in November 2026,
+-- MAGIC it looked for the words "open" and "active" in the status values, found neither, and answered 0. Your answers may differ.
+-- MAGIC Read the SQL to see what your agent guessed. If Genie asks what you mean, reply: *use your best guess and show the SQL*.
 
 -- COMMAND ----------
 
@@ -125,10 +127,11 @@ SELECT status, count(*) AS permits FROM permits GROUP BY ALL ORDER BY permits DE
 -- MAGIC ## Step 3: document the data
 -- MAGIC
 -- MAGIC Comments live in Unity Catalog with the table, so every tool and every person sees the same definitions.
+-- MAGIC Run the cell below, then go back to your Genie Agent.
 
 -- COMMAND ----------
 
-COMMENT ON TABLE permits IS 'City of Calgary building permits applied for from January 2025 to November 13 2026. One row per permit. Source: City of Calgary open data, Open Government Licence - City of Calgary.';
+COMMENT ON TABLE permits IS 'City of Calgary building permits applied for from January 2025 to November 13 2026. One row per permit. Contains information licensed under the Open Government Licence – City of Calgary.';
 
 ALTER TABLE permits ALTER COLUMN permit_num COMMENT 'Permit number, unique per permit, for example BP2026-01234.';
 ALTER TABLE permits ALTER COLUMN status COMMENT 'Current status. Closed statuses: Completed, Cancelled, Refused, Expired, File Closed. Every other status means the permit is still open.';
@@ -157,7 +160,7 @@ ALTER TABLE permits ALTER COLUMN community_name COMMENT 'Community (neighbourhoo
 -- MAGIC Open and closed describe the data, so they went in a column comment that every tool can read.
 -- MAGIC "Active" is a business rule, and only the City can say which statuses count. So it goes in the agent's instructions.
 -- MAGIC
--- MAGIC 1. In your Genie Agent, open **Configure**, then the **Text** tab, and add this instruction:
+-- MAGIC 1. In your Genie Agent, open **Configure**, then the **Text** tab, and paste this instruction into the text box (not the chat):
 -- MAGIC    *A permit is active if its status is Issued Permit, Pre Backfill Phase, Pre Board Phase or Final Phase.*
 -- MAGIC 2. Start a **new chat** and ask **How many permits are active?** again. Compare the SQL with the first answer.
 -- MAGIC 3. Then try one or two of these:
@@ -177,7 +180,7 @@ FROM permits
 
 -- COMMAND ----------
 
--- Top 5 communities by new housing units on permits issued in 2026 (RANGEVIEW leads with 810).
+-- Top 5 communities by new housing units on permits issued in 2026.
 SELECT c.community_name, sum(p.housing_units) AS new_units
 FROM permits AS p
 JOIN communities AS c USING (community_code)
@@ -197,10 +200,10 @@ SELECT
 -- COMMAND ----------
 
 SELECT
-  assert_true((SELECT count(*) FROM permits WHERE status NOT IN ('Completed', 'Cancelled', 'Refused', 'Expired', 'File Closed')) = 15620, 'open permits should be 15,620') AS open_ok,
-  assert_true((SELECT count(*) FROM permits WHERE status IN ('Issued Permit', 'Pre Backfill Phase', 'Pre Board Phase', 'Final Phase')) = 11353, 'active permits should be 11,353') AS active_ok,
-  assert_true((SELECT median(datediff(issued_date, applied_date)) FROM permits WHERE permit_type = 'Single Construction Permit' AND issued_date IS NOT NULL) = 19, 'median days should be 19') AS median_ok,
-  assert_true((SELECT count(*) FROM permits WHERE community_name = 'UNIVERSITY DISTRICT' AND year(issued_date) = 2026) = 20, 'University District should have 20') AS ud_ok
+  assert_true((SELECT count(*) FROM permits WHERE status NOT IN ('Completed', 'Cancelled', 'Refused', 'Expired', 'File Closed')) = 15620, 'open permits should be 15,620: run this notebook from the top') AS open_ok,
+  assert_true((SELECT count(*) FROM permits WHERE status IN ('Issued Permit', 'Pre Backfill Phase', 'Pre Board Phase', 'Final Phase')) = 11353, 'active permits should be 11,353: run this notebook from the top') AS active_ok,
+  assert_true((SELECT median(datediff(issued_date, applied_date)) FROM permits WHERE permit_type = 'Single Construction Permit' AND issued_date IS NOT NULL) = 19, 'median days should be 19: run this notebook from the top') AS median_ok,
+  assert_true((SELECT count(*) FROM permits WHERE community_name = 'UNIVERSITY DISTRICT' AND year(issued_date) = 2026) = 20, 'University District should have 20: run this notebook from the top') AS ud_ok
 
 -- COMMAND ----------
 

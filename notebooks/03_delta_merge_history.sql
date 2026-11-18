@@ -11,6 +11,7 @@
 -- COMMAND ----------
 
 -- Start from a clean copy so the version numbers below match yours (also works as a catch-up).
+-- Careful: this drops permits. If you already did lab 04, run lab 04 again from the top afterwards.
 USE CATALOG workspace;
 CREATE SCHEMA IF NOT EXISTS data604;
 USE SCHEMA data604;
@@ -54,7 +55,7 @@ FROM read_files(
   format => 'csv', header => true, escape => '"', mode => 'FAILFAST',
   schema => 'permit_num STRING, status STRING, applied_date DATE, issued_date DATE, completed_date DATE, permit_type STRING, permit_class STRING, work_class STRING, housing_units INT, est_project_cost DECIMAL(14,2), total_sqft DECIMAL(12,2), community_code STRING, community_name STRING, status_changed_on DATE, event_seq INT');
 
-SELECT assert_true(count(*) = 8534, 'expected 8,534 change events') AS events_ok, count(*) AS events
+SELECT assert_true(count(*) = 8534, 'expected 8,534 change events: check that permits_updates.csv is in the volume') AS events_ok, count(*) AS events
 FROM permit_updates;
 
 -- COMMAND ----------
@@ -78,7 +79,7 @@ LIMIT 20
 
 -- COMMAND ----------
 
-SELECT assert_true(count(*) = 1195, 'expected 1,195 permits with more than one event') AS duplicates_found, count(*) AS permits_with_many_events
+SELECT assert_true(count(*) = 1195, 'expected 1,195 permits with more than one event: run lab 03 from the top') AS duplicates_found, count(*) AS permits_with_many_events
 FROM (SELECT permit_num FROM permit_updates GROUP BY ALL HAVING count(*) > 1)
 
 -- COMMAND ----------
@@ -96,12 +97,13 @@ FROM (SELECT permit_num FROM permit_updates GROUP BY ALL HAVING count(*) > 1)
 -- COMMAND ----------
 
 -- Keep only the latest event per permit. event_seq breaks ties when two events share a date.
-CREATE OR REPLACE TEMP VIEW latest_updates AS
+-- A view is a saved query, kept in your schema. The MERGE below reads from it.
+CREATE OR REPLACE VIEW latest_updates AS
 SELECT * EXCEPT (status_changed_on, event_seq)
 FROM permit_updates
 QUALIFY row_number() OVER (PARTITION BY permit_num ORDER BY status_changed_on DESC, event_seq DESC) = 1;
 
-SELECT assert_true(count(*) = 7263, 'expected 7,263 permits after the dedupe') AS dedupe_ok, count(*) AS permits
+SELECT assert_true(count(*) = 7263, 'expected 7,263 permits after the dedupe: run lab 03 from the top') AS dedupe_ok, count(*) AS permits
 FROM latest_updates;
 
 -- COMMAND ----------
@@ -110,7 +112,8 @@ FROM latest_updates;
 -- MAGIC ## MERGE: update the permits that changed, insert the new ones
 -- MAGIC
 -- MAGIC MySQL has `INSERT ... ON DUPLICATE KEY UPDATE`. `MERGE` is the SQL-standard version, and it can also delete.
--- MAGIC Expect 4,512 updated rows and 2,751 inserted rows in the result.
+-- MAGIC Expect 4,512 updated rows and 2,751 inserted rows in the result. If you run it a second time, it reports
+-- MAGIC 7,263 updated and 0 inserted and adds a version. That is fine, and the checks below still pass.
 
 -- COMMAND ----------
 
@@ -122,7 +125,7 @@ WHEN NOT MATCHED THEN INSERT *
 
 -- COMMAND ----------
 
-SELECT assert_true(count(*) = 45676, 'expected 45,676 permits after the merge') AS merge_ok, count(*) AS permits
+SELECT assert_true(count(*) = 45676, 'expected 45,676 permits after the merge: run lab 03 from the top') AS merge_ok, count(*) AS permits
 FROM permits
 
 -- COMMAND ----------
@@ -148,7 +151,7 @@ ORDER BY permits DESC
 
 -- COMMAND ----------
 
-SELECT assert_true(count(*) = 4505, 'expected 4,505 permits issued or closed since September 30') AS time_travel_ok, count(*) AS changed
+SELECT assert_true(count(*) = 4505, 'expected 4,505 permits issued or closed since September 30: run lab 03 from the top') AS time_travel_ok, count(*) AS changed
 FROM permits VERSION AS OF 1 AS sep30
 JOIN permits AS cur USING (permit_num)
 WHERE sep30.status <> cur.status
@@ -158,7 +161,8 @@ WHERE sep30.status <> cur.status
 -- MAGIC %md
 -- MAGIC ## Oops: an UPDATE without a WHERE clause
 -- MAGIC
--- MAGIC Everyone does this once. In MySQL you would reach for last night's backup. Here, run it on purpose:
+-- MAGIC Everyone does this once. In MySQL you would reach for last night's backup. Here, run it on purpose,
+-- MAGIC then run the `RESTORE` cell right after it, even if you are short on time. Lab 04 needs the restored table.
 
 -- COMMAND ----------
 
@@ -175,7 +179,7 @@ SELECT status, count(*) AS permits FROM permits GROUP BY ALL ORDER BY permits DE
 
 -- COMMAND ----------
 
-SELECT assert_true(count_if(status = 'Completed') = 27375, 'expected 27,375 completed permits after the restore') AS restore_ok
+SELECT assert_true(count_if(status = 'Completed') = 27375, 'expected 27,375 completed permits after the restore: run lab 03 from the top') AS restore_ok
 FROM permits
 
 -- COMMAND ----------
@@ -193,11 +197,14 @@ DESCRIBE HISTORY permits
 -- MAGIC %md
 -- MAGIC ## Why this matters for machine learning
 -- MAGIC
--- MAGIC A model trained on `permits VERSION AS OF 2` can be retrained on exactly the same rows a year from now.
--- MAGIC Record the version next to the model, and the training data is reproducible.
+-- MAGIC Train a model on `permits VERSION AS OF 2` and record that version next to the model. Anyone can then rebuild
+-- MAGIC the same training set, as long as that version is still kept. Old versions don't last forever: by default
+-- MAGIC `VACUUM` can delete their files after 7 days, and Databricks may run `VACUUM` for you on managed tables.
+-- MAGIC To retrain on the same rows next year, save the training set as its own table, for example with
+-- MAGIC `CREATE TABLE permits_training DEEP CLONE permits VERSION AS OF 2`.
 -- MAGIC
 -- MAGIC Two writers at the same time? Delta uses **optimistic concurrency**: writers don't take row locks like InnoDB.
 -- MAGIC Each writer prepares its files and tries to commit the next version, and Delta checks the commit for conflicts.
--- MAGIC If two commits change the same data, one of them fails and has to retry.
+-- MAGIC If two commits change the same rows, one of them fails with an error and has to be retried.
 -- MAGIC
 -- MAGIC Next: **04_genie_chatbot**.

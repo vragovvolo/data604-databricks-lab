@@ -36,8 +36,8 @@ GROUP BY ALL
 -- MAGIC %md
 -- MAGIC ## 2. No B-tree indexes: skip files instead
 -- MAGIC
--- MAGIC MySQL finds one day's rows with a B-tree index. Delta keeps the min and max of each column for every file
--- MAGIC (the first 32 columns, by default).
+-- MAGIC MySQL finds one day's rows with a B-tree index. For every file, Delta keeps the min and max values
+-- MAGIC of the table's first 32 columns (the default).
 -- MAGIC If a file's range can't contain the value, the file is skipped. Clustering puts similar values in the same
 -- MAGIC files, so the ranges are narrow and most files get skipped.
 

@@ -8,7 +8,7 @@ Teaching material prepared by Volo Vragov (Databricks). This is not an official 
 
 ## Before class (about 10 minutes)
 
-1. **Create a free Databricks account** at [databricks.com/learn/free-edition](https://www.databricks.com/learn/free-edition). You can sign in with an email code, Google or Microsoft. A personal Google account or personal email is the simplest choice. If you prefer not to create an account, pair with a classmate in class.
+1. **Create a free Databricks account** at [databricks.com/learn/free-edition](https://www.databricks.com/learn/free-edition). You can sign in with an email code, Google or Microsoft. A personal Google account or personal email is the simplest choice. If you prefer not to create an account, pair with a classmate and work together on their laptop.
 2. **Log in once**, open **SQL Editor** in the left bar, and run `SELECT 1`. If you get a result, you are ready.
 3. **Download the two data files** to your laptop: [`data/permits_snapshot.csv`](data/permits_snapshot.csv) and [`data/permits_updates.csv`](data/permits_updates.csv). Open each file on GitHub and click *Download raw file*.
 4. Bring your laptop and charger.
@@ -17,7 +17,7 @@ Teaching material prepared by Volo Vragov (Databricks). This is not an official 
 
 **Option A, Git folder (recommended).** In Databricks, open **Workspace**, go to your home folder, click **Create**, then **Git folder**. Paste `https://github.com/vragovvolo/data604-databricks-lab` and click **Create**. Open `notebooks/00_start_here`.
 
-**Option B, no Git.** On GitHub click **Code**, then **Download ZIP**, and unzip it. In Databricks open **Workspace**, then your home folder, then **Import**, and import the `.sql` files from `notebooks/`. With this option, upload the two CSV files from your laptop (step 3 above), because the fallback loader needs the Git folder.
+**Option B, no Git.** On GitHub click **Code**, then **Download ZIP**, and unzip it. In Databricks open **Workspace**, then your home folder, then **Import**, and import each `.sql` file from `notebooks/`. With this option, upload the two CSV files from your laptop (step 3 above), because the fallback loader needs the Git folder.
 
 Attach every lab notebook to the **Serverless Starter Warehouse** (top right, **Connect**).
 
@@ -29,6 +29,8 @@ Attach every lab notebook to the **Serverless Starter Warehouse** (top right, **
 | `notebooks/03_delta_merge_history` | Dedupe change events, `MERGE` them, use time travel, undo a mistake with `RESTORE` |
 | `notebooks/04_genie_chatbot` | Fix a broken key, declare keys, document the data, build and improve a Genie Agent |
 | `solutions/solutions` | Answers to the exercises |
+
+The `instructor/` folder is for the instructor. Don't run those notebooks: one of them deletes the lab tables.
 
 ## If something goes wrong
 
@@ -51,4 +53,6 @@ The data comes from the City of Calgary [Building Permits](https://data.calgary.
 
 *Contains information licensed under the [Open Government Licence – City of Calgary](https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa).*
 
-Code and notebooks: [Apache License 2.0](LICENSE).
+The files in `data/` are derived from that dataset: some columns were removed, the September 30 snapshot was rebuilt, and the change events were reconstructed. The City of Calgary does not endorse this material.
+
+Data: Open Government Licence – City of Calgary. Code and notebooks: [Apache License 2.0](LICENSE).

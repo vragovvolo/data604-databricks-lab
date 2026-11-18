@@ -40,7 +40,8 @@ LIMIT 10
 -- MAGIC ## Create the table, then load it
 -- MAGIC
 -- MAGIC In MySQL you would write `CREATE TABLE` and then `LOAD DATA INFILE`. Here it is `CREATE TABLE`
--- MAGIC and `INSERT ... SELECT FROM read_files(...)`. We pin the column types so nothing is left to guessing.
+-- MAGIC and `INSERT OVERWRITE ... SELECT FROM read_files(...)`. We pin the column types so nothing is left to guessing.
+-- MAGIC `OVERWRITE` replaces the rows instead of adding to them, so running the cell twice is safe.
 -- MAGIC
 -- MAGIC Tables you create here are **Delta tables** by default: Parquet files plus a transaction log. More on that in lab 03.
 
@@ -64,7 +65,7 @@ CREATE OR REPLACE TABLE permits (
 
 -- COMMAND ----------
 
-INSERT INTO permits
+INSERT OVERWRITE permits
 SELECT permit_num, status, applied_date, issued_date, completed_date, permit_type, permit_class, work_class, housing_units, est_project_cost, total_sqft, community_code, community_name
 FROM read_files(
   '/Volumes/workspace/data604/raw/permits_snapshot.csv',

@@ -3,6 +3,7 @@
 -- MAGIC # DATA 604 lab 02: the SQL you know, then much bigger data
 -- MAGIC
 -- MAGIC Attach to the **Serverless Starter Warehouse**. Run the catch-up cell first if you skipped lab 01.
+-- MAGIC The part 1 numbers are for the September 30 snapshot. If you already ran lab 03, yours include October and November.
 
 -- COMMAND ----------
 
@@ -76,11 +77,12 @@ ORDER BY permit_class, est_project_cost DESC
 
 -- MAGIC %md
 -- MAGIC **Your turn:** which 5 communities had the most demolition permits applied for in 2025?
--- MAGIC (`work_class = 'Demolition'`). Answer in `solutions/solutions`.
+-- MAGIC (`work_class = 'Demolition'`). Write your query in the cell below. The answer is in `solutions/solutions`.
 
 -- COMMAND ----------
 
--- your query here
+-- Replace the line below with your query.
+SELECT 'your query here' AS your_turn
 
 
 -- COMMAND ----------

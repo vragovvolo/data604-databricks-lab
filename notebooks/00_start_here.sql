@@ -55,8 +55,8 @@ USE SCHEMA data604;
 
 -- Check: the schema and the volume exist (this cell errors if something is missing).
 SELECT
-  assert_true((SELECT count(*) FROM information_schema.schemata WHERE schema_name = 'data604') = 1, 'schema data604 is missing'),
-  assert_true((SELECT count(*) FROM information_schema.volumes WHERE volume_schema = 'data604' AND volume_name = 'raw') = 1, 'volume data604.raw is missing')
+  assert_true((SELECT count(*) FROM information_schema.schemata WHERE schema_name = 'data604') = 1, 'schema data604 is missing: run the cell above, then this one'),
+  assert_true((SELECT count(*) FROM information_schema.volumes WHERE volume_schema = 'data604' AND volume_name = 'raw') = 1, 'volume data604.raw is missing: run the cell above, then this one')
 
 -- COMMAND ----------
 

@@ -65,8 +65,9 @@ SELECT permit_num, community_name, est_project_cost FROM permits WHERE est_proje
 
 -- COMMAND ----------
 
--- Clean-up so the next session starts the same way.
+-- Clean-up: removes the mask and the grants. Between sessions, also run reset_between_sessions.
 ALTER TABLE permits ALTER COLUMN est_project_cost DROP MASK;
 REVOKE SELECT ON TABLE workspace.data604.permits FROM `second.user@example.com`;
 REVOKE USE SCHEMA ON SCHEMA workspace.data604 FROM `second.user@example.com`;
+REVOKE USE CATALOG ON CATALOG workspace FROM `second.user@example.com`;
 DROP FUNCTION IF EXISTS mask_cost;

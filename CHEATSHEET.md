@@ -9,10 +9,10 @@
 | `INSERT ... ON DUPLICATE KEY UPDATE` | `MERGE INTO t USING s ON ... WHEN MATCHED THEN UPDATE ... WHEN NOT MATCHED THEN INSERT ...` |
 | `AUTO_INCREMENT` | `BIGINT GENERATED ALWAYS AS IDENTITY` |
 | `PRIMARY KEY`, `FOREIGN KEY` enforced by InnoDB | Informational: declared, used by tools like Genie, **not enforced**. `NOT NULL` and `CHECK` are enforced |
-| `CREATE INDEX` (B-tree) | No B-tree indexes. Per-file min and max statistics plus `CLUSTER BY` let queries skip files |
-| Redo log and binlog | The Delta transaction log: one atomic commit per statement, every version kept |
+| `CREATE INDEX` (B-tree) | No B-tree indexes. Per-file min and max statistics let queries skip files. `CLUSTER BY` plus `OPTIMIZE` groups similar values, so more files get skipped |
+| Redo log and binlog | The Delta transaction log: one atomic commit per statement, recent versions kept for time travel |
 | Restore last night's backup | `RESTORE TABLE t TO VERSION AS OF n` and `SELECT ... FROM t VERSION AS OF n` |
-| Row locks | No row locks. Optimistic concurrency: each commit is checked for conflicts, and a conflicting writer fails and retries |
+| Row locks | No row locks. Optimistic concurrency: each commit is checked for conflicts. A conflicting write fails with an error and has to be retried |
 | `EXPLAIN` | `EXPLAIN FORMATTED`, plus the Query Profile in the UI |
 | `GRANT SELECT ON db.t TO 'user'@'host'` | ``GRANT SELECT ON TABLE c.s.t TO `user@example.com` `` |
 | Views for row-level security | Row filters and column masks attached to the table |

@@ -4,6 +4,8 @@ Source: City of Calgary [Building Permits](https://data.calgary.ca/Business-and-
 
 *Contains information licensed under the [Open Government Licence – City of Calgary](https://data.calgary.ca/stories/s/Open-Calgary-Terms-of-Use/u45n-7awa).*
 
+These files are derived from the City dataset, as described below. The City of Calgary does not endorse this material.
+
 ## Files
 
 | File | Rows | What it is |
@@ -16,18 +18,18 @@ Source: City of Calgary [Building Permits](https://data.calgary.ca/Business-and-
 
 `permit_num`, `status`, `applied_date`, `issued_date`, `completed_date`, `permit_type`, `permit_class`, `work_class`, `housing_units`, `est_project_cost`, `total_sqft`, `community_code`, `community_name`.
 
-Changes from the source: the free-text description, applicant and contractor names, addresses, coordinates and geometry are not included. Column names are snake_case, dates are ISO (`yyyy-mm-dd`), and whitespace in text was collapsed.
+Changes from the source: the free-text description, applicant and contractor names, addresses, coordinates and geometry were removed from this copy. The public source dataset still has them, keyed by the same permit number. Column names are snake_case, dates are ISO (`yyyy-mm-dd`), and whitespace in text was collapsed.
 
 ## How the September 30 snapshot was rebuilt
 
-The open dataset only has each permit's current state, so the snapshot is reconstructed from the permit dates:
+The open dataset only has each permit's current state, so the snapshot is an approximation rebuilt from the permit dates:
 
 - a permit issued after September 30 is shown as `In Review`, with no issue or completion date
 - a permit completed after September 30 is shown as `Issued Permit` with no completion date if it was issued by then, and as `In Review` if it never was (for example, cancelled or refused in October)
-- statuses that carry no date (for example Hold or the inspection phases) keep today's value, so changes between them are not in the updates file
+- statuses that carry no date (for example Hold, the inspection phases, or a permit closed with no date recorded) keep today's value, so changes between them are not in the updates file
 
-`In Review` is a placeholder for "not issued yet", not the exact status on September 30.
+In the rebuilt rows, `In Review` is a placeholder for "not issued yet", not the exact status on September 30. A few other permits have `In Review` as their real status in the source.
 
 The updates file has one event per dated milestone after September 30: the application (for new permits), the issue date and the completion date. The last event of each permit carries its current row. A new application that is issued and completed in the window has three events. `event_seq` orders events that share a date. Replaying the latest event per permit onto the snapshot gives exactly the current dataset.
 
-Rebuild both files with `tools/build_permits_csv.py`.
+Rebuild both files with `python3 tools/build_permits_csv.py --raw-dir raw --out-dir data`. It downloads the City data into `raw` the first time (add `--refresh` to download again), so it needs internet access. The source changes every day, so a rebuild gives slightly different numbers. If the source has two rows for one permit number, the script keeps the first.
