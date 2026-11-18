@@ -1,0 +1,70 @@
+-- Databricks notebook source
+-- MAGIC %md
+-- MAGIC # Instructor demo: how a distributed query runs, and how to make it read less
+-- MAGIC
+-- MAGIC Needs `prep_day_before` to have run in this account. Attach to the SQL warehouse.
+
+-- COMMAND ----------
+
+USE CATALOG workspace;
+-- Turn off the result cache so every run really reads data. Compare files and bytes read, not seconds.
+SET use_cached_result = false;
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ## 1. The plan for the lab 02 join
+-- MAGIC
+-- MAGIC Look for: the scans, **ShuffleExchange** (the shuffle, MapReduce's middle step), **GroupingAgg** twice (partial
+-- MAGIC then final: combine, then reduce), and **BroadcastHashJoin** for the small tables (nation, region).
+-- MAGIC With Photon the names start with `Photon`, for example `PhotonGroupingAgg`.
+
+-- COMMAND ----------
+
+EXPLAIN FORMATTED
+SELECT r.r_name AS region, year(o.o_orderdate) AS order_year,
+       sum(l.l_extendedprice * (1 - l.l_discount)) AS revenue
+FROM samples.tpch.lineitem AS l
+JOIN samples.tpch.orders   AS o ON l.l_orderkey = o.o_orderkey
+JOIN samples.tpch.customer AS c ON o.o_custkey = c.c_custkey
+JOIN samples.tpch.nation   AS n ON c.c_nationkey = n.n_nationkey
+JOIN samples.tpch.region   AS r ON n.n_regionkey = r.r_regionkey
+GROUP BY ALL
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ## 2. No B-tree indexes: skip files instead
+-- MAGIC
+-- MAGIC MySQL finds one day's rows with a B-tree index. Delta keeps the min and max of each column for every file
+-- MAGIC (the first 32 columns, by default).
+-- MAGIC If a file's range can't contain the value, the file is skipped. Clustering puts similar values in the same
+-- MAGIC files, so the ranges are narrow and most files get skipped.
+
+-- COMMAND ----------
+
+DESCRIBE DETAIL perf.lineitem_plain
+
+-- COMMAND ----------
+
+DESCRIBE DETAIL perf.lineitem_by_shipdate
+
+-- COMMAND ----------
+
+-- Same query, unclustered copy. Open "See performance" (Query Profile) and note files read and pruned.
+SELECT count(*) AS lines, round(sum(l_extendedprice), 2) AS revenue
+FROM perf.lineitem_plain
+WHERE l_shipdate = DATE'1995-06-17'
+
+-- COMMAND ----------
+
+-- Same query, clustered by l_shipdate. Same answer, far fewer files read.
+SELECT count(*) AS lines, round(sum(l_extendedprice), 2) AS revenue
+FROM perf.lineitem_by_shipdate
+WHERE l_shipdate = DATE'1995-06-17'
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC Talking points: the answer is identical. The clustered table reads a handful of files instead of all of them.
+-- MAGIC You choose clustering keys from the filters people actually use, the same way you chose index columns in MySQL.

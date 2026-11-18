@@ -1,0 +1,91 @@
+{
+  "source": "City of Calgary Building Permits (c2es-76ed), Open Government Licence – City of Calgary",
+  "start": "2025-01-01",
+  "cutoff": "2026-09-30",
+  "asof": "2026-11-13",
+  "snapshot_rows": 42925,
+  "update_events": 8534,
+  "update_permits": 7263,
+  "permits_with_multiple_events": 1195,
+  "merge_matched_rows": 4512,
+  "merge_changed_rows": 4512,
+  "merge_inserted_rows": 2751,
+  "final_rows": 45676,
+  "communities_before_fix": 286,
+  "community_codes_with_multiple_names": [
+    "UND"
+  ],
+  "answers": {
+    "status_changed_rows": 4505,
+    "open_permits": 15620,
+    "active_permits": 11353,
+    "issued_2026": 18557,
+    "top5_new_units_2026": [
+      [
+        "RANGEVIEW",
+        810
+      ],
+      [
+        "MANCHESTER INDUSTRIAL",
+        588
+      ],
+      [
+        "HAYSBORO",
+        583
+      ],
+      [
+        "HUXLEY",
+        567
+      ],
+      [
+        "BELTLINE",
+        517
+      ]
+    ],
+    "median_days_to_issue_single_construction": 19.0,
+    "university_district_issued_2026": 20,
+    "communities_after_fix": 287
+  },
+  "snapshot_status_counts": {
+    "Completed": 24666,
+    "Issued Permit": 9090,
+    "In Review": 2138,
+    "Cancelled": 1800,
+    "Pre Backfill Phase": 1799,
+    "Hold": 900,
+    "Pending Plans Review Assignment": 718,
+    "Pre Board Phase": 466,
+    "Refused": 420,
+    "New": 226,
+    "Pending Plans Review": 174,
+    "Expired": 171,
+    "Application Received": 153,
+    "Pending Prescreen Review": 111,
+    "Hold - Prescreen Review": 50,
+    "Hold - Pending Plans Review": 20,
+    "File Closed": 19,
+    "Pending - Building By-Law Review": 3,
+    "Final Phase": 1
+  },
+  "final_status_counts": {
+    "Completed": 27375,
+    "Issued Permit": 8199,
+    "Pre Backfill Phase": 2361,
+    "Cancelled": 1950,
+    "Hold": 1252,
+    "Pending Plans Review Assignment": 993,
+    "Pre Board Phase": 792,
+    "In Review": 650,
+    "Refused": 479,
+    "Pending Plans Review": 396,
+    "New": 393,
+    "Application Received": 364,
+    "Expired": 233,
+    "Pending Prescreen Review": 134,
+    "Hold - Prescreen Review": 55,
+    "Hold - Pending Plans Review": 24,
+    "File Closed": 19,
+    "Pending - Building By-Law Review": 6,
+    "Final Phase": 1
+  }
+}
