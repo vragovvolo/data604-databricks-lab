@@ -67,4 +67,4 @@ WHERE l_shipdate = DATE'1995-06-17'
 
 -- MAGIC %md
 -- MAGIC Talking points: the answer is identical. The clustered table reads a handful of files instead of all of them.
--- MAGIC You choose clustering keys from the filters people actually use, the same way you chose index columns in MySQL.
+-- MAGIC You choose clustering keys from the filters people actually use, the same way you choose index columns in MySQL.

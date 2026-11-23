@@ -52,7 +52,7 @@ FROM permits
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## Step 1: normalize a communities table (Monday's lecture, for real)
+-- MAGIC ## Step 1: normalize a communities table
 -- MAGIC
 -- MAGIC `permits` repeats each community's name on every row. Move communities into their own table with a primary key.
 -- MAGIC First check that the key really identifies one community:
