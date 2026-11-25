@@ -18,9 +18,9 @@ USE SCHEMA data604;
 
 -- COMMAND ----------
 
--- The files you uploaded into the volume. Both files should be listed with these exact names:
--- permits_snapshot.csv and permits_updates.csv. No (1) after the name. If one is missing or misnamed, upload it again
--- (lab 00, Next section). Option A students can also run setup/fallback_load.
+-- The files in the volume (copied by setup/fallback_load, or uploaded). Both should be listed with these exact names:
+-- permits_snapshot.csv and permits_updates.csv. No (1) after the name. If one is missing, run setup/fallback_load
+-- (Git folder) or upload it again (lab 00, Next section).
 LIST '/Volumes/workspace/data604/raw/'
 
 -- COMMAND ----------

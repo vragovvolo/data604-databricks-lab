@@ -1,12 +1,12 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Fallback: copy the lab CSV files into your volume
+# MAGIC # Setup: copy the lab CSV files into your volume
 # MAGIC
-# MAGIC Use this only if you could not upload the two CSV files yourself.
-# MAGIC It copies them from this Git folder into `/Volumes/workspace/data604/raw/`.
+# MAGIC Run this once, at the end of lab 00. It copies the two CSV files from this Git folder into
+# MAGIC `/Volumes/workspace/data604/raw/`. It creates the schema and the volume too, if they are missing.
 # MAGIC
 # MAGIC **Attach this notebook to Serverless compute** (not the SQL warehouse: this one is Python), then **Run all**.
-# MAGIC Afterwards, go back to lab 01 and continue from the `LIST` cell.
+# MAGIC Then open lab 01, or go back to it and continue from the `LIST` cell.
 
 # COMMAND ----------
 

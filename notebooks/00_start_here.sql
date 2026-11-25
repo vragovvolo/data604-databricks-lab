@@ -63,15 +63,12 @@ SELECT
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## Next
+-- MAGIC ## Next: put the two CSV files into your volume
 -- MAGIC
--- MAGIC Upload `permits_snapshot.csv` and `permits_updates.csv` into the volume:
--- MAGIC **Catalog** (left bar), then **workspace**, **data604**, **raw**, then **Upload to this volume**. Select both files at once (hold Cmd or Ctrl to pick the second). If raw does not show, refresh the page.
+-- MAGIC **Option A (Git folder): run the setup notebook.** Open `setup/fallback_load` in this Git folder. In the compute menu at the top right, pick **Serverless** (not the SQL warehouse: this notebook is Python). Click **Run all**. It copies `permits_snapshot.csv` and `permits_updates.csv` from the `data` folder of this Git folder into the volume, and lists them at the end.
 -- MAGIC
--- MAGIC Both options do this upload step. No CSV files on your laptop? Download them from the `data` folder of the GitHub repo.
+-- MAGIC **Option B (notebooks imported one at a time), or if the setup notebook fails: upload the two files.** **Catalog** (left bar), then **workspace**, **data604**, **raw**, then **Upload to this volume**. Select both files at once (hold Cmd or Ctrl to pick the second). If raw does not show, refresh the page. No CSV files on your laptop? Download them from the `data` folder of the GitHub repo.
 -- MAGIC
--- MAGIC Option A (Git folder): if the upload fails, run `setup/fallback_load` on Serverless compute (not the SQL warehouse). It copies the same two files from the `data` folder of this Git folder.
--- MAGIC
--- MAGIC Option B (notebooks imported one at a time): use the upload. `setup/fallback_load` cannot find the data folder in that setup.
+-- MAGIC Either way, look at **raw** in Catalog afterwards: a volume holds files, a table holds rows.
 -- MAGIC
 -- MAGIC Then open **01_load_and_explore**.
