@@ -2,10 +2,8 @@
 -- MAGIC %md
 -- MAGIC # Instructor demo: governance with Unity Catalog
 -- MAGIC
--- MAGIC Needs labs 00 to 04 run in this account. For the second-user part, add your spare account first:
--- MAGIC **Settings**, **Identity and access**, **Users**, **Add user**. Replace all six `second.user@example.com` values
--- MAGIC (three GRANT lines and three REVOKE lines) with the spare account, using Find and replace in your workspace copy only.
--- MAGIC Do not commit the change.
+-- MAGIC Needs labs 00 to 04 run in this account. One account is enough: the GRANT goes to the built-in group
+-- MAGIC `account users`, so every cell runs without a second user. Say what a second user would see.
 
 -- COMMAND ----------
 
@@ -28,13 +26,13 @@ SHOW GRANTS ON TABLE permits
 -- MAGIC %md
 -- MAGIC ## 1. GRANT is the same SQL as in MySQL
 -- MAGIC
--- MAGIC Before running the GRANT cells, open a private browser window, sign in as the spare account, open the SQL editor, pick the Serverless Starter Warehouse and run `SELECT * FROM workspace.data604.permits`. Expect PERMISSION_DENIED. Then sign out of the spare account and come back here.
+-- MAGIC Say it, do not show it: a user without these grants gets PERMISSION_DENIED on this table.
 
 -- COMMAND ----------
 
-GRANT USE CATALOG ON CATALOG workspace TO `second.user@example.com`;
-GRANT USE SCHEMA ON SCHEMA workspace.data604 TO `second.user@example.com`;
-GRANT SELECT ON TABLE workspace.data604.permits TO `second.user@example.com`;
+GRANT USE CATALOG ON CATALOG workspace TO `account users`;
+GRANT USE SCHEMA ON SCHEMA workspace.data604 TO `account users`;
+GRANT SELECT ON TABLE workspace.data604.permits TO `account users`;
 SHOW GRANTS ON TABLE permits;
 
 -- COMMAND ----------
@@ -54,7 +52,7 @@ ALTER TABLE permits ALTER COLUMN est_project_cost SET MASK mask_cost;
 
 -- COMMAND ----------
 
--- As the instructor you see the five largest costs. In the second user's window the same query shows rows with the cost column empty.
+-- As the instructor (an admin) you see the five largest costs. Anyone who is not an admin sees the same rows with the cost column empty.
 SELECT permit_num, community_name, est_project_cost FROM permits ORDER BY est_project_cost DESC NULLS LAST LIMIT 5
 
 -- COMMAND ----------
@@ -69,7 +67,7 @@ SELECT permit_num, community_name, est_project_cost FROM permits ORDER BY est_pr
 
 -- Clean-up: removes the mask and the grants. Between sessions, also run reset_between_sessions.
 ALTER TABLE permits ALTER COLUMN est_project_cost DROP MASK;
-REVOKE SELECT ON TABLE workspace.data604.permits FROM `second.user@example.com`;
-REVOKE USE SCHEMA ON SCHEMA workspace.data604 FROM `second.user@example.com`;
-REVOKE USE CATALOG ON CATALOG workspace FROM `second.user@example.com`;
+REVOKE SELECT ON TABLE workspace.data604.permits FROM `account users`;
+REVOKE USE SCHEMA ON SCHEMA workspace.data604 FROM `account users`;
+REVOKE USE CATALOG ON CATALOG workspace FROM `account users`;
 DROP FUNCTION IF EXISTS mask_cost;
