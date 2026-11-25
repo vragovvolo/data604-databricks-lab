@@ -85,6 +85,7 @@ def fetch(raw_dir: Path, start: str, asof: str, refresh: bool) -> Path:
             break
         offset += PAGE
         time.sleep(1)
+    raw_dir.mkdir(parents=True, exist_ok=True)
     with raw.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=SOURCE_FIELDS)
         w.writeheader()

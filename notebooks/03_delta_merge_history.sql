@@ -87,6 +87,7 @@ FROM (SELECT permit_num FROM permit_updates GROUP BY ALL HAVING count(*) > 1)
 -- MAGIC %md
 -- MAGIC **Optional:** remove the `--` in front of the next three lines and run it to see the error.
 -- MAGIC Then put the `--` back.
+-- MAGIC If you use Run all later, put the `--` back first.
 
 -- COMMAND ----------
 
@@ -138,7 +139,8 @@ DESCRIBE HISTORY permits
 -- MAGIC ## Time travel: what changed since September 30?
 -- MAGIC
 -- MAGIC Version 1 is the table right after the first load. Join today's table to version 1 of itself to see which permits
--- MAGIC were issued or closed since September 30. (Statuses without a date, like Hold, are not in the change file.)
+-- MAGIC were issued or closed since September 30. (The change file has one event per dated milestone: an application,
+-- MAGIC an issue or a completion. A status change with no date, such as a move to Hold, has no event of its own.)
 
 -- COMMAND ----------
 
@@ -195,13 +197,13 @@ DESCRIBE HISTORY permits
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## Why this matters for machine learning
+-- MAGIC ## Why this matters for machine learning (optional reading)
 -- MAGIC
 -- MAGIC Train a model on `permits VERSION AS OF 2` and record that version next to the model. Anyone can then rebuild
 -- MAGIC the same training set, as long as that version is still kept. Old versions don't last forever: by default
 -- MAGIC `VACUUM` can delete their files after 7 days, and Databricks may run `VACUUM` for you on managed tables.
--- MAGIC To retrain on the same rows next year, save the training set as its own table, for example with
--- MAGIC `CREATE TABLE permits_training DEEP CLONE permits VERSION AS OF 2`.
+-- MAGIC To retrain on the same rows next year, save the training set as its own table. It is a full copy of that version:
+-- MAGIC `CREATE TABLE permits_training AS SELECT * FROM permits VERSION AS OF 2`.
 -- MAGIC
 -- MAGIC Two writers at the same time? Delta uses **optimistic concurrency**: writers don't take row locks like InnoDB.
 -- MAGIC Each writer prepares its files and tries to commit the next version, and Delta checks the commit for conflicts.

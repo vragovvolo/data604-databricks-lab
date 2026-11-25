@@ -12,7 +12,7 @@
 -- COMMAND ----------
 
 -- Catch-up: brings permits to the state at the end of lab 03. Safe to run again.
--- It can't undo the lab 03 UPDATE mistake. If the check below fails, run the RESTORE cell in lab 03 first.
+-- It can't undo the lab 03 UPDATE mistake for the rows the change file does not cover. If the check below fails, run the RESTORE cell in lab 03 first.
 USE CATALOG workspace;
 CREATE SCHEMA IF NOT EXISTS data604;
 USE SCHEMA data604;
@@ -163,11 +163,13 @@ ALTER TABLE permits ALTER COLUMN community_name COMMENT 'Community (neighbourhoo
 -- MAGIC 1. In your Genie Agent, open **Configure**, then the **Text** tab, and paste this instruction into the text box (not the chat):
 -- MAGIC    *A permit is active if its status is Issued Permit, Pre Backfill Phase, Pre Board Phase or Final Phase.*
 -- MAGIC 2. Start a **new chat** and ask **How many permits are active?** again. Compare the SQL with the first answer.
--- MAGIC 3. Then try one or two of these:
+-- MAGIC 3. Optional, if you have time: try one or two of these
 -- MAGIC    - Which 5 communities got the most new housing units from permits issued in 2026?
 -- MAGIC    - What is the median number of days from application to issue for Single Construction Permits?
 -- MAGIC    - How many permits were issued in University District in 2026?
 -- MAGIC    - Show monthly applications for 2025 and 2026 as a line chart.
+-- MAGIC
+-- MAGIC Items 1 and 2 are the lab. If you are behind, skip item 3. The check cells at the bottom run without Genie.
 -- MAGIC
 -- MAGIC Check every answer the way you would check a classmate's query: read the SQL. The cells below have the right answers.
 

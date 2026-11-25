@@ -14,6 +14,12 @@ CREATE SCHEMA IF NOT EXISTS perf COMMENT 'Instructor-only tables for the perform
 
 -- COMMAND ----------
 
+-- Keep automatic maintenance out of this schema. In a test run, predictive optimization clustered the plain copy by itself after the build, and then both copies skipped files.
+-- If your workspace does not allow this statement, skip this cell and use the check in 10_performance_demo before class.
+ALTER SCHEMA perf DISABLE PREDICTIVE OPTIMIZATION;
+
+-- COMMAND ----------
+
 -- REPARTITION(32) writes 32 files with rows spread at random, so every file covers every ship date.
 CREATE OR REPLACE TABLE perf.lineitem_plain
 AS SELECT /*+ REPARTITION(32) */ * FROM samples.tpch.lineitem;
@@ -47,3 +53,6 @@ SELECT
 -- MAGIC %md
 -- MAGIC Then run `10_performance_demo` once end to end and note the files read on each table for the speaker notes.
 -- MAGIC Also run labs 00 to 04 once in this account so a finished copy exists as a fallback, then run `reset_between_sessions`.
+-- MAGIC Before each session, run the check at the top of `10_performance_demo`: it says STOP if the plain copy was changed after this build.
+-- MAGIC
+-- MAGIC Check the plain copy again 30 minutes after the build. The check at the top of `10_performance_demo` says STOP if anything changed it.

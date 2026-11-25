@@ -2,8 +2,8 @@
 -- MAGIC %md
 -- MAGIC # DATA 604 lab 01: load a dataset
 -- MAGIC
--- MAGIC The data: City of Calgary building permits applied for from January 2025 to September 2026,
--- MAGIC rebuilt as of **September 30, 2026** from the permit dates (see `data/README.md`). In lab 03 you will apply the changes since then.
+-- MAGIC The data: City of Calgary building permits applied for from January 2025 to September 30, 2026.
+-- MAGIC The snapshot is rebuilt as of **September 30, 2026** from the permit dates (see `data/README.md`). Lab 03 adds the changes up to November 13, 2026.
 -- MAGIC
 -- MAGIC *Contains information licensed under the Open Government Licence – City of Calgary.*
 -- MAGIC
@@ -18,7 +18,9 @@ USE SCHEMA data604;
 
 -- COMMAND ----------
 
--- The files you uploaded into the volume. Both CSVs should be listed.
+-- The files you uploaded into the volume. Both files should be listed with these exact names:
+-- permits_snapshot.csv and permits_updates.csv. No (1) after the name. If one is missing or misnamed, upload it again
+-- (lab 00, Next section). Option A students can also run setup/fallback_load.
 LIST '/Volumes/workspace/data604/raw/'
 
 -- COMMAND ----------
@@ -42,6 +44,7 @@ LIMIT 10
 -- MAGIC In MySQL you would write `CREATE TABLE` and then `LOAD DATA INFILE`. Here it is `CREATE TABLE`
 -- MAGIC and `INSERT OVERWRITE ... SELECT FROM read_files(...)`. We pin the column types so nothing is left to guessing.
 -- MAGIC `OVERWRITE` replaces the rows instead of adding to them, so running the cell twice is safe.
+-- MAGIC If you run this lab again after lab 03 or lab 04, `permits` goes back to the September 30 snapshot. Run lab 04 from the top to get the changes back.
 -- MAGIC
 -- MAGIC Tables you create here are **Delta tables** by default: Parquet files plus a transaction log. More on that in lab 03.
 

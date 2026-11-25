@@ -6,6 +6,8 @@
 -- MAGIC (the prebuilt demo tables). Not needed if you use a separate instructor account per session.
 -- MAGIC Then, in the UI: delete this session's Genie Agent, clear notebook outputs (**Edit**, **Clear all outputs**),
 -- MAGIC and sign the second user out. At 16:45 run `SELECT 1` to wake the warehouse.
+-- MAGIC If the governance demo ran or was started, run its clean-up cell first, then this reset.
+-- MAGIC If you use one account for both sessions, run labs 00 to 04 again before the 17:00 governance demo.
 
 -- COMMAND ----------
 
@@ -25,4 +27,6 @@ SHOW TABLES IN data604
 SELECT assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'data604'
                     AND table_name IN ('permits', 'permit_updates', 'communities', 'latest_updates')) = 0,
                    'lab tables still exist: run the first cell again') AS reset_ok,
-       assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'perf') = 2, 'perf tables missing: rerun prep_day_before') AS perf_ok
+       assert_true((SELECT count(*) FROM information_schema.tables WHERE table_schema = 'perf') = 2, 'perf tables missing: rerun prep_day_before') AS perf_ok,
+       assert_true((SELECT max_by(operation, version) FROM (DESCRIBE HISTORY perf.lineitem_plain)) LIKE 'CREATE%',
+                   'lineitem_plain was changed after the build, so the performance demo would show no difference: rerun prep_day_before') AS plain_copy_ok

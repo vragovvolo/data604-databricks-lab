@@ -28,8 +28,9 @@ def find_data_dir() -> Path:
 
 data_dir = find_data_dir()
 missing = [n for n in ("permits_snapshot.csv", "permits_updates.csv") if not (data_dir / n).exists()]
-assert not missing, (f"Can't find {missing} in {data_dir}. If you imported a ZIP, the data folder was not included: "
-                     "upload the two CSV files from your laptop instead. The steps are at the end of lab 00.")
+assert not missing, (f"Can't find {missing} in {data_dir}. "
+                     "This is expected if you imported the notebooks one at a time (Option B), because the data folder is not imported. "
+                     "Upload the two CSV files: lab 00, Next section, then Catalog, workspace, data604, raw, Upload to this volume.")
 target = Path(f"/Volumes/{catalog}/{schema}/{volume}")
 for name in ("permits_snapshot.csv", "permits_updates.csv"):
     shutil.copyfile(data_dir / name, target / name)

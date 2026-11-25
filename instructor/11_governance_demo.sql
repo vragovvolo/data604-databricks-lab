@@ -3,8 +3,9 @@
 -- MAGIC # Instructor demo: governance with Unity Catalog
 -- MAGIC
 -- MAGIC Needs labs 00 to 04 run in this account. For the second-user part, add your spare account first:
--- MAGIC **Settings**, **Identity and access**, **Users**, **Add user**. Replace `second.user@example.com` below
--- MAGIC in your workspace copy only. Do not commit a real address to the public repo.
+-- MAGIC **Settings**, **Identity and access**, **Users**, **Add user**. Replace all six `second.user@example.com` values
+-- MAGIC (three GRANT lines and three REVOKE lines) with the spare account, using Find and replace in your workspace copy only.
+-- MAGIC Do not commit the change.
 
 -- COMMAND ----------
 
@@ -13,6 +14,7 @@ USE SCHEMA data604;
 
 -- COMMAND ----------
 
+-- Expect workspace_admins = true. If it is false, the mask hides costs from you too: stop and ask.
 SELECT current_user() AS me,
        is_account_group_member('admins') AS account_admins,
        is_member('admins') AS workspace_admins
@@ -26,7 +28,7 @@ SHOW GRANTS ON TABLE permits
 -- MAGIC %md
 -- MAGIC ## 1. GRANT is the same SQL as in MySQL
 -- MAGIC
--- MAGIC Before running this, show that the second user gets PERMISSION_DENIED on `SELECT * FROM workspace.data604.permits`.
+-- MAGIC Before running the GRANT cells, open a private browser window, sign in as the spare account, open the SQL editor, pick the Serverless Starter Warehouse and run `SELECT * FROM workspace.data604.permits`. Expect PERMISSION_DENIED. Then sign out of the spare account and come back here.
 
 -- COMMAND ----------
 
@@ -52,8 +54,8 @@ ALTER TABLE permits ALTER COLUMN est_project_cost SET MASK mask_cost;
 
 -- COMMAND ----------
 
--- As the instructor (admin) you still see costs. Switch to the second user's browser and run the same query.
-SELECT permit_num, community_name, est_project_cost FROM permits WHERE est_project_cost IS NOT NULL LIMIT 5
+-- As the instructor you see the five largest costs. In the second user's window the same query shows rows with the cost column empty.
+SELECT permit_num, community_name, est_project_cost FROM permits ORDER BY est_project_cost DESC NULLS LAST LIMIT 5
 
 -- COMMAND ----------
 

@@ -8,6 +8,7 @@
 -- COMMAND ----------
 
 -- Catch-up: builds the permits table from the volume if it is missing or empty. Safe to run any time.
+-- Needs the two CSV files in the volume (lab 00, Next section).
 USE CATALOG workspace;
 CREATE SCHEMA IF NOT EXISTS data604;
 USE SCHEMA data604;
@@ -76,8 +77,8 @@ ORDER BY permit_class, est_project_cost DESC
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC **Your turn:** which 5 communities had the most demolition permits applied for in 2025?
--- MAGIC (`work_class = 'Demolition'`). Write your query in the cell below. The answer is in `solutions/solutions`.
+-- MAGIC **Your turn (optional):** which 5 communities had the most demolition permits applied for in 2025?
+-- MAGIC (`work_class = 'Demolition'`). Write your query in the cell below. If you are behind, skip it and read the answer in `solutions/solutions`.
 
 -- COMMAND ----------
 
@@ -122,12 +123,12 @@ ORDER BY region, order_year
 -- MAGIC %md
 -- MAGIC This is the SQL you would write in MySQL. The difference is underneath: the warehouse split the scan
 -- MAGIC into many tasks that ran in parallel, then shuffled rows so each task could add up its share of the groups.
--- MAGIC That is MapReduce's idea, done by a query engine. Your instructor will open the Query Profile for this query.
+-- MAGIC That is MapReduce's idea, done by a query engine. Your instructor will show how this query ran in a demo after lab 03.
 
 -- COMMAND ----------
 
--- Optional: the plan for the same join. Look for ShuffleExchange (the shuffle), GroupingAgg twice (partial, then final)
--- and BroadcastHashJoin (the small tables are copied to every task). Names may start with Photon.
+-- Optional: the plan for the same join. Photon is Databricks' native query engine, so some names start with Photon.
+-- ShuffleExchange moves rows between workers, GroupingAgg runs twice (partial, then final), BroadcastHashJoin copies a small table to every worker.
 EXPLAIN FORMATTED
 SELECT r.r_name AS region, year(o.o_orderdate) AS order_year,
        sum(l.l_extendedprice * (1 - l.l_discount)) AS revenue
