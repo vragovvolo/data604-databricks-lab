@@ -6,6 +6,8 @@ You will load City of Calgary building permits into Databricks, query them with 
 
 Teaching material prepared by Volo Vragov (Databricks). This is not an official Databricks repository.
 
+The slides from the workshop are in [`slides/data604-databricks-workshop-2026-11-25.pdf`](slides/data604-databricks-workshop-2026-11-25.pdf).
+
 ## Before class (about 10 minutes)
 
 1. **Create a free Databricks account** at [databricks.com/learn/free-edition](https://www.databricks.com/learn/free-edition). You can sign in with an email code, Google or Microsoft. A personal Google account or personal email is the simplest choice. If you prefer not to create an account, pair with a classmate and work together on their laptop.
@@ -55,4 +57,4 @@ The data comes from the City of Calgary [Building Permits](https://data.calgary.
 
 The files in `data/` are derived from that dataset: some columns were removed, the September 30 snapshot was rebuilt, and the change events were reconstructed. The City of Calgary does not endorse this material.
 
-Data: Open Government Licence – City of Calgary. Code and notebooks: [Apache License 2.0](LICENSE).
+Data: Open Government Licence – City of Calgary. Code and notebooks: [Apache License 2.0](LICENSE). Slides: shared for reference, not covered by the Apache License.
